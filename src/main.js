@@ -24,6 +24,13 @@ const $ = (sel) => document.querySelector(sel);
 const toastEl = $('#toast');
 let toastTimer = 0;
 
+const disabledHost = {
+  bus: { send() {} },
+  publish() {},
+  reconcile() {},
+  setCold() {}
+};
+
 function toast(message, ms = 3200) {
   toastEl.textContent = message;
   toastEl.classList.add('show');
@@ -190,7 +197,9 @@ async function boot() {
 
   await jamendo.init().catch(() => {});
 
-  app.host = new Host(app, { applyParam: applyParamWithFallback });
+  app.host = globalThis.crossOriginIsolated && typeof SharedArrayBuffer !== 'undefined'
+    ? new Host(app, { applyParam: applyParamWithFallback })
+    : disabledHost;
   app.host.setCold({ sampleRate: ctx.sampleRate });
   app.host.bus.send('host-ready', {});
   app.params.onChange = (id, value) => {
