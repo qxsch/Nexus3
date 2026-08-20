@@ -1,0 +1,74 @@
+appId: ch.qxs.nexus3
+productName: NEXUS-3
+copyright: Copyright © qxsch
+
+directories:
+  output: ../build-artifact
+  buildResources: build
+
+asar: true
+
+files:
+  - main/**/*
+  - package.json
+  - from: build/icon.png
+    to: icon.png
+  - from: ..
+    to: .
+    filter:
+      - index.html
+      - server.js
+      - LICENSE
+      - Howto-EndUser.md
+      - src/**/*
+
+electronFuses:
+  runAsNode: false
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  onlyLoadAppFromAsar: true
+  grantFileProtocolExtraPrivileges: false
+
+win:
+  target:
+    - msi
+  artifactName: ${productName}-${version}-windows-${arch}.${ext}
+
+msi:
+  # Per-user install: no elevation prompt, lands in %LOCALAPPDATA%.
+  perMachine: false
+  upgradeCode: 5F2A1C74-3D9E-4B18-9E45-1C6B0A7E3F21
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  runAfterFinish: true
+  # ICE validation needs admin rights and is blocked outright on managed machines.
+  additionalLightArgs:
+    - -sval
+
+linux:
+  target:
+    - AppImage
+  category: AudioVideo
+  synopsis: Three-deck HTML5 DJ mixing console
+  description: >-
+    NEXUS-3 is a three-deck DJ console with AudioWorklet turntables, beat detection,
+    auto-sync, a master FX rack and an SQLite indexed crate over your own music folders.
+  desktop:
+    entry:
+      Name: NEXUS-3
+      Categories: AudioVideo;Audio;Player;
+      MimeType: audio/mpeg;audio/flac;audio/ogg;audio/wav;
+  artifactName: ${productName}-${version}-linux-${arch}.${ext}
+
+# Built unsigned: without an Apple Developer ID the app is ad-hoc signed only, so
+# Gatekeeper asks the user to confirm the first launch. Add notarize + a signing
+# identity here once a certificate exists.
+mac:
+  target:
+    - dmg
+  category: public.app-category.music
+  artifactName: ${productName}-${version}-macos-${arch}.${ext}
+  extendInfo:
+    NSMicrophoneUsageDescription: >-
+      Microphone access is only used to reveal the names of your audio output devices
+      so you can route the headphone cue to a second device.

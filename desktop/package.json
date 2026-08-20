@@ -1,0 +1,22 @@
+{
+  "name": "nexus3",
+  "productName": "NEXUS-3",
+  "version": "1.0.0",
+  "description": "NEXUS-3 three-deck DJ console",
+  "private": true,
+  "type": "module",
+  "main": "main/index.js",
+  "author": "qxsch",
+  "homepage": "https://github.com/qxsch/Nexus3",
+  "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "build:win": "electron-builder --win msi",
+    "build:linux": "electron-builder --linux AppImage"
+  },
+  "devDependencies": {
+    "electron": "^43.3.0",
+    "electron-builder": "^26.0.12"
+  }
+}

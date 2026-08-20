@@ -1,0 +1,15 @@
+{
+  "name": "sound-mixer",
+  "private": true,
+  "version": "1.0.0",
+  "description": "HTML5 three-deck DJ mixing table built on AudioWorklet, Web Audio and Worker threads",
+  "type": "module",
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server.js",
+    "dev": "node --disable-warning=ExperimentalWarning server.js",
+    "rescan": "node --disable-warning=ExperimentalWarning server.js --scan full"
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}

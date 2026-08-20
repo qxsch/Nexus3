@@ -1,0 +1,92 @@
+name: Release binaries
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to stamp on the packages, for example 1.2.0
+        required: true
+        default: 1.0.0
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.release.tag_name || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    name: ${{ matrix.target }} (x64 + arm64)
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # MSI needs the WiX toolset, which only runs on Windows.
+          - target: windows
+            runner: windows-latest
+          - target: linux
+            runner: ubuntu-latest
+          - target: macos
+            runner: macos-latest
+
+    # No Apple Developer ID, so skip the signing identity lookup instead of failing.
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - name: Resolve version
+        shell: pwsh
+        run: |
+          $tag = '${{ github.event.release.tag_name }}'
+          $manual = '${{ inputs.version }}'
+          $version = if ($tag) { $tag -replace '^v', '' } else { $manual }
+          if ($version -notmatch '^\d+\.\d+\.\d+([-+].+)?$') {
+            throw "Tag '$tag' does not look like a version. Tag releases as v1.2.3."
+          }
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+          Write-Host "building version $version"
+
+      - name: Cache Electron downloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/electron
+            ~/.cache/electron-builder
+            ~/Library/Caches/electron
+            ~/Library/Caches/electron-builder
+            ~/AppData/Local/electron/Cache
+            ~/AppData/Local/electron-builder/Cache
+          key: electron-${{ matrix.target }}-${{ hashFiles('desktop/package-lock.json') }}
+          restore-keys: electron-${{ matrix.target }}-
+
+      - name: Build packages
+        shell: pwsh
+        run: ./build.ps1 -Os ${{ matrix.target }} -Arch all -Version $env:VERSION
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nexus3-${{ matrix.target }}-${{ env.VERSION }}
+          path: build-artifact/*
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Attach to the release
+        if: github.event_name == 'release'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $files = Get-ChildItem build-artifact -File | ForEach-Object { $_.FullName }
+          gh release upload '${{ github.event.release.tag_name }}' $files --clobber

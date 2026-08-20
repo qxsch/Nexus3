@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>NEXUS·3: DJ Mixing Table</title>
+    <link rel="stylesheet" href="./src/css/style.css" />
+  </head>
+  <body>
+    <div id="boot" class="boot">
+      <div class="boot-card">
+        <div class="boot-logo">NEXUS<span>·3</span></div>
+        <p class="boot-sub">Three-deck DJ console for the browser</p>
+        <ul class="boot-features">
+          <li><b>AudioWorklet turntables</b>: sample-accurate varispeed, reverse &amp; real scratching</li>
+          <li><b>Worker-thread analysis</b>: BPM detection, beat grid and multi-band waveforms</li>
+          <li><b>Auto-sync</b>: tempo match plus a phase-locked loop that keeps decks glued</li>
+          <li><b>Split output</b>: master to the speakers, PFL cue to a second device or channels 3/4</li>
+          <li><b>Indexed crate</b>: SQLite full-text search over your local folders, plus Jamendo</li>
+        </ul>
+        <button id="boot-btn" class="boot-btn" type="button">Enter the booth</button>
+        <p class="boot-note">Audio needs a user gesture to start. Chromium browsers give the best results
+          (<code>setSinkId</code> for headphone cueing).</p>
+      </div>
+    </div>
+
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">N3</span>
+        <div>
+          <div class="brand-name">NEXUS·3</div>
+          <div class="brand-sub" id="ctx-info">audio engine idle</div>
+        </div>
+      </div>
+
+      <div class="routing" id="routing-host"></div>
+
+      <div class="topbar-actions">
+        <span class="scan-host" id="scan-host"></span>
+        <button id="help-btn" class="ghost" type="button">Shortcuts</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel-host" id="panel-root"></section>
+      <section class="crate" id="crate"></section>
+      <section class="decks" id="decks"></section>
+      <section class="mixer" id="mixer"></section>
+    </main>
+
+    <div class="modal hidden" id="help">
+      <div class="modal-card">
+        <h2>Keyboard shortcuts</h2>
+        <div class="shortcut-grid">
+          <div><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd><span>Play / pause deck A · B · C</span></div>
+          <div><kbd>Q</kbd><kbd>W</kbd><kbd>E</kbd><span>Cue (hold to preview)</span></div>
+          <div><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>Toggle sync</span></div>
+          <div><kbd>Z</kbd><kbd>X</kbd><kbd>C</kbd><span>Toggle headphone cue (PFL)</span></div>
+          <div><kbd>Shift</kbd><span>Fine mode while dragging knobs / faders</span></div>
+          <div><kbd>Space</kbd><span>Play / pause the focused deck</span></div>
+          <div><kbd>←</kbd><kbd>→</kbd><span>Nudge crossfader</span></div>
+          <div><kbd>?</kbd><span>Toggle this panel</span></div>
+        </div>
+        <h2>Mouse</h2>
+        <div class="shortcut-grid">
+          <div><span class="wide">Drag the platter centre to scratch, the outer ring to pitch bend.</span></div>
+          <div><span class="wide">Drag the detail waveform to needle-drop, scroll it to zoom.</span></div>
+          <div><span class="wide">Double-click any knob or fader to reset it.</span></div>
+          <div><span class="wide">Drop an audio file onto a deck to load it.</span></div>
+          <div><span class="wide">In the crate, double-click a row to load deck A, or drag it onto any deck.</span></div>
+        </div>
+        <button class="ghost" id="help-close" type="button">Close</button>
+      </div>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
