@@ -7,8 +7,13 @@ headphone cueing.
 
 ![NEXUS·3 console](doc-images/nexus3-console.png)
 
+> [!NOTE]
 > **New here?** [Howto-EndUser.md](Howto-EndUser.md) is the end user guide: a quick start, then every
 > box and every control documented with screenshots. This README covers setup, flags and internals.
+
+> [!TIP]
+> Try it out in Chromium: https://qxsch.github.io/Nexus3/
+> (Web version has limited features and they also depend on browser support)
 
 ---
 
